@@ -1,0 +1,68 @@
+name: Build APK (all devices)
+
+# Runs on every push/PR to main, and can also be triggered manually
+# from the Actions tab in GitHub ("Run workflow" button).
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    name: Build Android APKs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Sync web assets into the Android project
+        run: npx cap sync android
+
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
+
+      - name: Build debug APKs (all architectures + universal)
+        run: cd android && ./gradlew assembleDebug --stacktrace
+
+      - name: Build release APKs (all architectures + universal, debug-signed)
+        run: cd android && ./gradlew assembleRelease --stacktrace
+
+      # Debug APKs: easiest to install directly on any phone for testing.
+      - name: Upload debug APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apks
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      # Release APKs: smaller/optimized, one per CPU architecture + universal.
+      # NOTE: these are signed with the Android debug key so this workflow
+      # runs out of the box. Replace with your own keystore before publishing
+      # to the Play Store — see README.md "Signing for production".
+      - name: Upload release APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apks
+          path: android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
