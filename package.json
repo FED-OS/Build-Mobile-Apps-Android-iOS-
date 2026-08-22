@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Wraps a website into an Android APK using Capacitor, built automatically via GitHub Actions.",
   "main": "index.js",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "sync": "npx cap sync android",
     "build:apk": "npx cap sync android && cd android && ./gradlew assembleDebug",
