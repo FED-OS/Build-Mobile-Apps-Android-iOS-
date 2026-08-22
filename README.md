@@ -1,5 +1,5 @@
 <img width="807" height="450" alt="1780084581" src="https://github.com/user-attachments/assets/df2d911b-3b04-4bad-a9f2-b436779f89d2" />
-# web2apk — turn a website into an installable Android APK
+# web2apk — turn a website into an installable Android APK ![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)
 
 This repo wraps a website in a native Android shell (using [Capacitor](https://capacitorjs.com))
 and builds it into APKs automatically with GitHub Actions — no local Android Studio needed.
